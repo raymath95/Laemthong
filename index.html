@@ -1115,10 +1115,10 @@
 
         verifyPinBtn.addEventListener('click', () => {
             const pin = pinInputEl.value.trim();
+            console.log("PIN entered:", pin); // Debug log
             if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 pinInputEl.classList.add('is-invalid');
                 pinInvalidFeedbackEl.textContent = "รหัส PIN ต้องเป็นตัวเลข 4 หลักเท่านั้น";
-                verifyPinBtn.disabled = false; // เปิดใช้งานปุ่มอีกครั้ง
                 return;
             }
             pinInputEl.classList.remove('is-invalid');
