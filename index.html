@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-12">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฟอร์มสั่งปุ๋ย-ค้าส่ง (ใช้ PIN)</title>
+    
+    <!-- External CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           VARIABLES & THEME SETTINGS
+           ============================================= */
+        :root {
+            --primary-color: #2E7D32;  /* สีเขียวเข้ม */
+            --secondary-color: #81C784;  /* สีเขียวอ่อน */
+            --accent-color: #FFA000;  /* สีส้มทอง */
+            --text-color: #1B5E20;  /* สีเขียวเข้มสำหรับข้อความ */
+            --bg-color: #F1F8E9;  /* สีพื้นหลังอ่อน */
+            --card-bg: #ffffff;
+            --border-radius: 2rem;
+            --transition: all 0.3s ease;
+        }
+
+        /* =============================================
+           BASE STYLES
+           ============================================= */
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            padding-bottom: 3rem;
+            font-size: 2rem; /* เพิ่มขนาดฟอนต์พื้นฐาน */
+        }
+
+        /* =============================================
+           FORM CARD STYLES
+           ============================================= */
+        .form-card {
+            background: var(--card-bg);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border-radius: var(--border-radius);
+            border: none;
+            transition: var(--transition);
+            margin-left: -7rem; /* เพิ่ม margin ด้านซ้าย */
+            margin-right:-7rem; /* เพิ่ม margin ด้านขวา */
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 8rem 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .form-header .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-header .header-icon {
+            font-size: 4.5rem;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
+        }
+
+        .form-header .header-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .form-header .header-subtitle {
+            color: #fff;
+            font-size: 3rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 3rem;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* =============================================
+           FORM ELEMENTS
+           ============================================= */
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            font-size: 2.5rem; /* เพิ่มขนาดฟอนต์ของ label */
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.85rem 1.2rem; /* เพิ่ม padding */
+            border: 2px solid #e0e0e0;
+            transition: var(--transition);
+            min-height: 55px; /* เพิ่มความสูงขั้นต่ำ */
+            font-size: 2.2rem; /* เพิ่มขนาดฟอนต์ของ input */
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .form-control:read-only {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+        }
+
+        /* =============================================
+           BUTTONS & INTERACTIVE ELEMENTS
+           ============================================= */
+        .btn {
+            padding: 1.1rem 2.2rem; /* เพิ่ม padding */
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+            min-height: 55px; /* เพิ่มความสูงขั้นต่ำ */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem; /* เพิ่มขนาดฟอนต์ของปุ่ม */
+        }
+
+        .btn-success {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-success:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* =============================================
+           THEME TOGGLE
+           ============================================= */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1050;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        .theme-toggle i {
+            font-size: 1.3rem;
+        }
+
+        /* =============================================
+           LOADING ANIMATION
+           ============================================= */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid var(--bg-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* =============================================
+           ANIMATIONS
+           ============================================= */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* =============================================
+           RESPONSIVE STYLES
+           ============================================= */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 3;
+                padding-right: 3;
+            }
+            .form-card {
+                margin: 1;
+                border-radius: 1;
+                box-shadow: none;
+            }
+            .form-header {
+                border-radius: 0;
+                padding: 2rem 1rem;
+            }
+            .form-header .header-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .form-header .header-title {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .form-header .header-subtitle {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .btn {
+                width: 100%;
+                padding: 0.9rem 1.5rem;
+                font-size: 1.2rem;
+                min-height: 50px;
+            }
+            .form-control, .form-select {
+                padding: 0.75rem 1rem;
+                font-size: 1.1rem;
+                min-height: 50px;
+            }
+            .form-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.3rem;
+            }
+            .total-box {
+                padding: 1rem;
+            }
+            .card-body.p-4.p-md-5 {
+                padding: 1.25rem !important;
+            }
+            .modal-body {
+                padding: 1rem;
+            }
+            .modal-title {
+                font-size: 1.15rem;
+            }
+            h5 {
+                font-size: 2rem;
+                margin-bottom: 1.2rem !important;
+            }
+            .form-section {
+                margin-bottom: 1.5rem;
+            }
+            .col-sm-8, .col-sm-4 {
+                flex-basis: auto;
+            }
+            .theme-toggle {
+                width: 48px;
+                height: 48px;
+            }
+            .theme-toggle i {
+                font-size: 1.3rem;
+            }
+            body {
+                font-size: 2rem; /* ปรับขนาดฟอนต์สำหรับมือถือ */
+            }
+        }
+
+        @media (max-width: 430px) {
+            .container {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .form-header {
+                padding: 1.25rem 1rem;
+            }
+            .form-header .header-icon {
+                font-size: 2.5rem;
+            }
+            .form-header .header-title {
+                font-size: 1.5rem;
+            }
+            .form-header .header-subtitle {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .card-body.p-4.p-md-5 {
+                padding: 1.25rem !important;
+            }
+            .modal-body {
+                padding: 1rem;
+            }
+            .modal-title {
+                font-size: 1.15rem;
+            }
+            .btn {
+                padding: 0.8rem 1.2rem;
+                font-size: 1.1rem;
+                min-height: 48px;
+            }
+            .btn i {
+                font-size: 1em;
+            }
+            .form-control, .form-select {
+                padding: 0.7rem 0.9rem;
+                font-size: 1.05rem;
+                min-height: 48px;
+            }
+            .form-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.3rem;
+            }
+            #modalFertilizerDetails .list-unstyled li,
+            #modalFertilizerDetails p.mb-1 {
+                font-size: 0.9rem;
+            }
+            #modalFertilizerDetails .list-unstyled {
+                margin-left: 1rem !important;
+            }
+            .modal-content .h4 {
+                font-size: 1.15rem;
+            }
+            .modal-content .h6 {
+                font-size: 1rem;
+            }
+            .col-md-2.col-6 .fw-bold.text-success.pt-2 {
+                font-size: 0.9rem;
+                padding-top: 0.4rem !important;
+            }
+            h5 {
+                font-size: 2rem;
+                margin-bottom: 1.2rem !important;
+            }
+            label[for="shopNameDisplay"], label[for="pinInput"] {
+                font-size: 0.9rem;
+            }
+            #pinInput {
+                font-size: 1.3rem;
+                min-height: 48px;
+            }
+            .modal-footer {
+                padding: 1rem;
+            }
+            .modal-footer .btn {
+                min-height: 48px;
+                font-size: 0.9rem;
+            }
+            .theme-toggle {
+                width: 48px;
+                height: 48px;
+                top: 0.75rem;
+                right: 0.75rem;
+            }
+            .theme-toggle i {
+                font-size: 1.3rem;
+            }
+            .form-section.border.p-3 {
+                padding: 1rem !important;
+            }
+            .form-section .row.g-3.align-items-end > div[class*="col-sm-"] {
+                width: 100%;
+                margin-bottom: 0.75rem;
+            }
+            .form-section .row.g-3.align-items-end > div[class*="col-sm-"]:last-child {
+                margin-bottom: 0;
+            }
+            body {
+                font-size: 1rem;
+            }
+        }
+
+        /* =============================================
+           UTILITY CLASSES
+           ============================================= */
+        .total-box {
+            background-color: rgba(46, 125, 50, 0.1);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            border: 1.5px solid rgba(46, 125, 50, 0.2);
+            font-size: 1.5rem; /* ปรับขนาดฟอนต์ที่นี่ */
+        }
+
+        .fertilizer-item-label-small {
+            font-size: 1.4rem !important; /* Adjust this value as needed */
+        }
+
+        /* เพิ่มขนาดฟอนต์ของ badge เลขบัญชีธนาคาร */
+        .badge.bg-success {
+            font-size: 5rem !important;
+            padding: 0.5rem 0.5rem;
+            font-weight: 500;
+        }
+
+        /* =============================================
+           CUSTOM SCROLLBAR
+           ============================================= */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* =============================================
+           MODAL STYLES
+           ============================================= */
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: none;
+        }
+        .modal-header {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .modal-footer {
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* =============================================
+           FORM SECTION ANIMATIONS
+           ============================================= */
+        .form-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            margin-bottom: 2rem; /* เพิ่มระยะห่างระหว่าง section */
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        .form-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-section h5 {
+            font-size: 1.5rem; /* เพิ่มขนาดฟอนต์ของหัวข้อ section */
+            margin-bottom: 1.2rem !important;
+        }
+
+        .form-section h6 {
+            font-size: 2rem; /* เพิ่มขนาดฟอนต์ของหัวข้อย่อย */
+            margin-bottom: 1rem;
+        }
+
+        /* =============================================
+           ALERT STYLES
+           ============================================= */
+        .alert {
+            font-size: 1.5em; /* เพิ่มขนาดฟอนต์ของ alert */
+            padding: 1.2rem; /* เพิ่ม padding */
+        }
+
+        .alert h6 {
+            font-size: 1.25rem; /* เพิ่มขนาดฟอนต์ของหัวข้อ alert */
+        }
+
+        .alert small {
+            font-size: 1.1rem; /* เพิ่มขนาดฟอนต์ของข้อความย่อยใน alert */
+        }
+
+        .custom-margin {
+            margin-left: 2rem;
+            margin-right: 2rem;
+        }
+
+        .large-font {
+            font-size: 2rem; /* ปรับขนาดฟอนต์ที่นี่ */
+        }
+
+        /* เพิ่ม CSS สำหรับการแสดงยอดรวมสูตรนี้ */
+        .item-total-display {
+            font-size: 1.8rem; /* ปรับขนาดฟอนต์ตามที่ต้องการ */
+            white-space: nowrap; /* ทำให้ไม่เกิดการตัดบรรทัด */
+        }
+
+        /* ... existing styles ... */
+
+        .button {
+            cursor: pointer;
+            border: solid 4px #161616;
+            border-top: none;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0px 4px 10px #00000062, 0px 10px 40px -10px #000000a6,
+                0px 12px 45px -15px #00000071;
+            transition: all 0.3s ease;
+        }
+        .inner {
+            padding: 12px 30px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* เพิ่มบรรทัดนี้ */
+            gap: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-bottom: solid 3px #37724e;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #57a568, #000);
+            color: #fff;
+            text-shadow: 1px 1px #000, 0 0 9px #fff;
+        }
+        .svgs {
+            position: relative;
+            margin-top: 9px;
+            z-index: 10;
+        }
+        .svgs > * {
+            filter: drop-shadow(0 0 6px #fff) drop-shadow(1px 1px 0px #000);
+        }
+        .svgs .svg-s {
+            position: absolute;
+            font-size: 0.8rem;
+            left: 20px;
+            top: -4px;
+        }
+        .button:active {
+            box-shadow: none;
+        }
+
+        .loader {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            margin: 130px 0;
+            perspective: 780px;
+        }
+
+        .text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #cecece;
+            z-index: 10;
+        }
+
+        .load-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border-radius: 50%;
+        }
+
+        .load-inner.load-one {
+            left: 0%;
+            top: 0%;
+            border-bottom: 3px solid #5c5edc;
+            animation: rotate1 1.15s linear infinite;
+        }
+
+        .load-inner.load-two {
+            right: 0%;
+            top: 0%;
+            border-right: 3px solid #9147ff;
+            animation: rotate2 1.15s 0.1s linear infinite;
+        }
+
+        .load-inner.load-three {
+            right: 0%;
+            bottom: 0%;
+            border-top: 3px solid #3b82f6;
+            animation: rotate3 1.15s 0.15s linear infinite;
+        }
+
+        @keyframes rotate1 {
+            0% {
+                transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
+            }
+            100% {
+                transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
+            }
+        }
+        @keyframes rotate2 {
+            0% {
+                transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
+            }
+            100% {
+                transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
+            }
+        }
+        @keyframes rotate3 {
+            0% {
+                transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
+            }
+            100% {
+                transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="loader">
+            <div class="load-inner load-one"></div>
+            <div class="load-inner load-two"></div>
+            <div class="load-inner load-three"></div>
+            <span class="text">ดึงข้อมูล...</span>
+        </div>
+    </div>
+
+    <div class="container py-4 py-md-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card form-card" data-aos="fade-up">
+                    <div class="card-header form-header text-center">
+                        <div class="header-content">
+                            <i class="bi bi-cart-check-fill header-icon"></i>
+                            <h1 class="header-title">ฟอร์มสั่งปุ๋ย-ค้าส่ง</h1>
+                            <p class="header-subtitle" style="font-size: 1.2rem;">
+                                ✳ กรุณากรอก PIN ร้านค้าเพื่อเริ่มทำรายการสั่งซื้อ ✳
+                            </p>
+                        </div>
+                        <div class="decoration decoration-1"></div>
+                        <div class="decoration decoration-2"></div>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        <form id="fertilizerOrderForm" onsubmit="handleFormSubmit(event)">
+                            <!-- Shop Selection (PIN Based) -->
+                            <div class="form-section">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-sm-8">
+                                        <label for="shopNameDisplay" class="form-label"><i class="bi bi-shop"></i> ชื่อร้านค้า</label>
+                                        <input type="text" class="form-control" id="shopNameDisplay" name="ชื่อร้าน" readonly required placeholder="กรุณากรอก PIN เพื่อแสดงชื่อร้าน">
+                                        <input type="hidden" id="verifiedShopPin" name="verifiedShopPin">
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <button type="button" class="button" id="openPinModalBtn">
+                                            <div class="inner">
+                                                <div class="svgs">
+                                                    <svg
+                                                        viewBox="0 0 256 256"
+                                                        height="1em"
+                                                        width="1em"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        class="svg-l"
+                                                    >
+                                                        <path
+                                                            d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15"
+                                                            fill="currentColor"
+                                                        ></path>
+                                                    </svg>
+                                                    <svg
+                                                        viewBox="0 0 256 256"
+                                                        height="1em"
+                                                        width="1em"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        class="svg-s"
+                                                    >
+                                                        <path
+                                                            d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15"
+                                                            fill="currentColor"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                                กรอก PIN
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <button type="button" class="btn btn-outline-info w-100" id="viewHistoryBtn" disabled>
+                                            <i class="bi bi-clock-history"></i> ดูประวัติการสั่งซื้อ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery & Payment Options -->
+                            <div class="form-section">
+                                <h5 class="mb-3"><i class="bi bi-gear-fill"></i> การจัดส่งและชำระเงิน</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="deliveryMethod" class="form-label"><i class="bi bi-truck"></i> ช่องทางการรับปุ๋ย</label>
+                                        <select class="form-select" id="deliveryMethod" name="ช่องทางการรับปุ๋ย" required>
+                                            <option value="" selected disabled>🔸 เลือกช่องทางรับปุ๋ย 🔸</option>
+                                            <option value="จัดส่ง">ให้ทางร้านจัดส่ง</option>
+                                            <option value="รับเองที่ร้าน">รับเองที่ร้าน</option>
+                                            <option value="สั่งเทรลเลอร์">สั่งแบบยกเทรลเลอร์</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="paymentMethod" class="form-label"><i class="bi bi-cash-coin"></i> วิธีการชำระเงิน</label>
+                                        <select class="form-select" id="paymentMethod" name="วิธีการชำระเงิน" required>
+                                            <option value="" selected disabled>🔸 เลือกวิธีชำระเงิน 🔸</option>
+                                            <option value="โอนผ่านธนาคาร SCB 409-621-8437">โอนผ่านธนาคาร SCB 409-621-8437</option>
+                                            <option value="จ่ายเงินสดที่แหลมทอง">จ่ายเงินสดที่ร้านแหลมทองการเกษตร</option>
+                                            <option value="จ่ายสดปลายทาง">จ่ายเงินสดปลายทาง (เมื่อรับสินค้า)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- เพิ่ม div สำหรับแสดงตัวเลือกย่อยและแจ้งเตือน -->
+                            <div id="codSubOptions" class="alert alert-info mt-2" style="display:none;">
+                                <label class="form-label mb-3 fw-bold">กรุณาเลือกวิธีชำระเงินปลายทาง:</label>
+                                <div class="d-flex gap-3 mb-3">
+                                    <div class="flex-grow-1">
+                                        <input type="radio" class="btn-check" id="cod_cash" name="codType" value="จ่ายสด" checked>
+                                        <label class="btn btn-outline-success w-100 py-3" for="cod_cash">
+                                            <i class="bi bi-cash-coin-fill fs-4 d-block mb-2"></i>
+                                            <span class="fw-bold">จ่ายสด</span>
+                                            <small class="d-block text-muted">ชำระเงินสดกับพนักงาน</small>
+                                        </label>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="radio" class="btn-check" id="cod_transfer" name="codType" value="จ่ายโอน">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="cod_transfer">
+                                            <i class="bi bi-bank2 fs-4 d-block mb-2"></i>
+                                            <span class="fw-bold">จ่ายโอน</span>
+                                            <small class="d-block text-muted">โอนเงินผ่านธนาคาร</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="codBankInfo" class="alert alert-warning mt-3" style="display:none;">
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        <i class="bi bi-bank fs-4 mb-3"></i>
+                                        <div>
+                                            <h6 class="mb-3">โอนผ่านธนาคาร SCB</h6>
+                                            <div class="mb-2">
+                                                <span class="badge bg-success">409-621-8437</span>
+                                            </div>
+                                            <p class="mb-0 fs-5">
+                                                <span class="text-muted">(ชื่อบัญชี: ร้านแหลมทองกิจเกษตร)</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-danger mt-3 mb-0">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <small>หากเลือกจ่ายปลายทาง กรุณาเตรียมเงินสดให้พอกับยอดสั่งซื้อด้วยครับ</small>
+                                </div>
+                            </div>
+
+                            <!-- Number of Fertilizer Types -->
+                            <div class="form-section">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="numFertilizers" class="form-label"><i class="bi bi-list-ol"></i> จำนวนสูตรปุ๋ยที่ต้องการสั่ง</label>
+                                        <input type="number" class="form-control" id="numFertilizers" min="1" max="8" placeholder="ระบุจำนวนสูตร (1-8 สูตร)" onchange="generateFertilizerFields()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Fertilizer Rows -->
+                            <div id="fertilizerRowsContainer">
+                                <!-- Fertilizer rows will be injected here by JavaScript -->
+                            </div>
+
+                            <!-- Optional Notes -->
+                            <div class="form-section">
+                                <label for="orderNotes" class="form-label"><i class="bi bi-pencil-square"></i> หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+                                <textarea class="form-control" id="orderNotes" name="หมายเหตุ" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม เช่น วันที่ต้องการรับสินค้า หรืออื่นๆ"></textarea>
+                            </div>
+
+
+                            <!-- Totals Summary -->
+                            <div class="form-section">
+                                <h5 class="mb-3"><i class="bi bi-calculator"></i> สรุปยอดรวม</h5>
+                                <div class="total-box p-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>จำนวนปุ๋ยทั้งหมด:</span>
+                                        <strong id="totalQuantityDisplay" class="ms-1">0 กระสอบ</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>ยอดรวมทั้งสิ้น:</span>
+                                        <strong id="grandTotalDisplay" class="ms-1 text-success h5 large-font">0 บาท</strong>
+                                    </div>
+                                    <input type="hidden" id="grandTotalInput" name="ยอดรวมทั้งหมด">
+                                    <input type="hidden" id="totalQuantityInput" name="จำนวนปุ๋ยรวม">
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="button btn-lg">
+                                    <div class="inner">
+                                        <div class="svgs">
+                                            <svg
+                                                viewBox="0 0 256 256"
+                                                height="1em"
+                                                width="1em"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="svg-l"
+                                            >
+                                                <path
+                                                    d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15"
+                                                    fill="currentColor"
+                                                ></path>
+                                            </svg>
+                                            <svg
+                                                viewBox="0 0 256 256"
+                                                height="1em"
+                                                width="1em"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="svg-s"
+                                            >
+                                                <path
+                                                    d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15"
+                                                    fill="currentColor"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        ตรวจสอบและยืนยันคำสั่งซื้อ
+                                    </div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="summaryModalLabel">
+                        <i class="bi bi-clipboard-check-fill"></i> สรุปคำสั่งซื้อของท่าน
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3"><i class="bi bi-person-check-fill"></i> ข้อมูลผู้สั่งซื้อและบริการ</h6>
+                            <p class="mb-1"><strong>ชื่อร้าน:</strong> <span id="modalShopName">-</span></p>
+                            <p class="mb-1"><strong>ช่องทางการรับปุ๋ย:</strong> <span id="modalDeliveryMethod">-</span></p>
+                            <p class="mb-0"><strong>วิธีการชำระเงิน:</strong> <span id="modalPaymentMethod">-</span></p>
+                            <p class="mb-0 mt-1" id="modalOrderNotesP" style="display:none;"><strong>หมายเหตุ:</strong> <span id="modalOrderNotes">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Fertilizer Details Section -->
+                    <div class="card bg-light">
+                        <div class="card-body" id="modalFertilizerDetails">
+                            <h6 class="card-title mb-3"><i class="bi bi-boxes"></i> รายละเอียดรายการปุ๋ย</h6>
+                            <!-- Fertilizer details will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2 mb-md-0">
+                                    <h6 class="mb-1"><i class="bi bi-box-seam-fill"></i> จำนวนรวมทั้งหมด</h6>
+                                    <p class="h4 text-primary mb-0"><span id="modalTotalQuantity">0</span> กระสอบ</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-1"><i class="bi bi-credit-card-2-front-fill"></i> ยอดรวมทั้งสิ้น</h6>
+                                    <p class="h4 text-success mb-0"><span id="modalGrandTotal">0</span> บาท</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="text-success mb-2"><i class="bi bi-heart-fill"></i> ขอบคุณที่ไว้วางใจสั่งซื้อสินค้ากับเราครับ/ค่ะ</p>
+                        <p class="text-muted small mb-0">ทางร้านจะติดต่อกลับเพื่อยืนยันคำสั่งซื้อของท่านโดยเร็วที่สุด 😊</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-pencil-fill"></i> แก้ไขข้อมูล
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmOrderBtn">
+                        <i class="bi bi-send-check-fill"></i> ยืนยันและส่งคำสั่งซื้อ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div class="modal fade" id="pinModal" tabindex="-1" aria-labelledby="pinModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="pinModalLabel">
+                        <i class="bi bi-shield-lock-fill"></i> กรุณากรอกรหัส PIN ร้านค้า
+                    </h5>
+                    <!-- No close button here, force PIN entry or cancel -->
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="pinInput" class="form-label">กรอกรหัส PIN 4 หลัก</label>
+                        <input type="password" class="form-control form-control-lg text-center" id="pinInput" maxlength="4" pattern="[0-9]*" inputmode="numeric" autocomplete="one-time-code" placeholder="XXXX">
+                        <div class="invalid-feedback text-center mt-2" id="pinInvalidFeedback">กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง</div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                     <button type="button" class="btn btn-secondary" id="cancelPinBtn" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-warning" id="verifyPinBtn">
+                        <i class="bi bi-check-lg"></i> ยืนยัน PIN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new div where appropriate in your HTML structure -->
+    <div class="card border-primary mb-6 custom-margin" style="max-width: 52rem;">
+        <!-- You can add content here -->
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="historyModalLabel">
+                        <i class="bi bi-clock-history"></i> ประวัติการสั่งซื้อ
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <h6 class="text-muted">ประวัติการสั่งซื้อของร้าน: <span id="historyShopName" class="text-primary"></span></h6>
+                        <div class="row justify-content-center mt-3">
+                            <div class="col-md-6">
+                                <select class="form-select" id="historyDateFilter">
+                                    <option value="">แสดงทั้งหมด</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="historyContent">
+                        <!-- History items will be populated here -->
+                    </div>
+                    <div id="noHistoryMessage" class="text-center text-muted py-4" style="display: none;">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <p class="mt-2">ไม่พบประวัติการสั่งซื้อ</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> ปิด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Loading State
+        const loadingOverlay = document.getElementById('loading');
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+        }
+        function hideLoading() {
+            loadingOverlay.classList.remove('active');
+        }
+
+        // Form Section Animation Observer
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.form-section').forEach(section => {
+            sectionObserver.observe(section);
+        });
+
+        // --- PIN MODAL LOGIC ---
+        const pinModalEl = document.getElementById('pinModal');
+        const pinModalInstance = new bootstrap.Modal(pinModalEl);
+        const openPinModalBtn = document.getElementById('openPinModalBtn');
+        const verifyPinBtn = document.getElementById('verifyPinBtn');
+        const cancelPinBtn = document.getElementById('cancelPinBtn'); // Added cancel button
+        const pinInputEl = document.getElementById('pinInput');
+        const shopNameDisplayEl = document.getElementById('shopNameDisplay');
+        const verifiedShopPinInputEl = document.getElementById('verifiedShopPin');
+        const pinInvalidFeedbackEl = document.getElementById('pinInvalidFeedback');
+
+        let isPinVerifiedGlobally = false;
+
+        // Function to toggle form controls' disabled state
+        function toggleFormControls(enable) {
+            const formControls = [
+                document.getElementById('deliveryMethod'),
+                document.getElementById('paymentMethod'),
+                document.getElementById('numFertilizers'),
+                document.getElementById('orderNotes'),
+                document.querySelector('#fertilizerOrderForm button[type="submit"]')
+            ];
+            const fertilizerContainer = document.getElementById('fertilizerRowsContainer');
+
+            formControls.forEach(control => {
+                if (control) {
+                    control.disabled = !enable;
+                }
+            });
+
+            if (fertilizerContainer) {
+                const inputsAndSelects = fertilizerContainer.querySelectorAll('input, select');
+                inputsAndSelects.forEach(el => el.disabled = !enable);
+                // If disabling, also clear the content as it's not relevant without PIN
+                if (!enable) {
+                    // fertilizerContainer.innerHTML = ''; // Optionally clear dynamic rows
+                    // document.getElementById("numFertilizers").value = ''; // Optionally clear num fertilizers
+                }
+            }
+            // If enabling and numFertilizers has a value, regenerate fields if needed
+            if (enable && document.getElementById("numFertilizers").value) {
+                // generateFertilizerFields(); // This might be redundant if fields are already there
+            }
+             // Ensure totals are recalculated and displayed correctly based on state
+            calculateTotals();
+        }
+
+        openPinModalBtn.addEventListener('click', () => {
+            pinInputEl.value = '';
+            pinInputEl.classList.remove('is-invalid');
+            pinInvalidFeedbackEl.textContent = 'กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง'; // Reset feedback
+            pinModalInstance.show();
+        });
+
+        pinModalEl.addEventListener('shown.bs.modal', () => {
+            pinInputEl.focus();
+        });
+        
+        cancelPinBtn.addEventListener('click', () => {
+             // If pin was previously verified, don't clear shop name. User might just be reopening.
+             // If not verified, it implies they are truly cancelling the PIN process for now.
+            if (!isPinVerifiedGlobally) {
+                 shopNameDisplayEl.value = '';
+                 verifiedShopPinInputEl.value = '';
+                 toggleFormControls(false); // Lock form if PIN was never verified
+            }
+            pinModalInstance.hide();
+        });
+
+
+        verifyPinBtn.addEventListener('click', () => {
+            const pin = pinInputEl.value.trim();
+            if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                pinInputEl.classList.add('is-invalid');
+                pinInvalidFeedbackEl.textContent = "รหัส PIN ต้องเป็นตัวเลข 4 หลักเท่านั้น";
+                verifyPinBtn.disabled = false; // เปิดใช้งานปุ่มอีกครั้ง
+                return;
+            }
+            pinInputEl.classList.remove('is-invalid');
+            verifyPinBtn.disabled = true; // ปิดใช้งานปุ่มในระหว่างตรวจสอบ
+
+            console.log("PIN being sent:", pin);
+
+            google.script.run
+                .withSuccessHandler(shopName => {
+                    if (shopName?.startsWith("ERROR_")) {
+                        // แสดงข้อผิดพลาดเฉพาะ
+                        const errorMessage = {
+                            "ERROR_SHEET_NOT_FOUND": "ไม่พบชีตข้อมูล PIN",
+                            "ERROR_PIN_NOT_FOUND": "ไม่พบ PIN นี้ในระบบ",
+                            "ERROR_FETCHING_SHOP": "เกิดข้อผิดพลาดในการดึงข้อมูล"
+                        }[shopName] || "เกิดข้อผิดไม่ทราบสาเหตุ";
+                        
+                        handlePinError(errorMessage);
+                    } else if (shopName) {
+                        // กรณีสำเร็จ
+                        shopNameDisplayEl.value = shopName;
+                        verifiedShopPinInputEl.value = pin;
+                        isPinVerifiedGlobally = true;
+                        pinModalInstance.hide();
+                        toggleFormControls(true); // Unlock form
+                        toggleHistoryButton(true); // Enable history button
+                        alert(`ยินดีต้อนรับ: ร้าน ${shopName}`);
+
+                        // Fetch and populate brands for the verified shop
+                        fetchAndPopulateBrands(shopName); // เรียกใช้ฟังก์ชันนี้เพื่อดึงยี่ห้อปุ๋ย
+                        fetchDeliveryMethods(); // Fetch delivery methods after verifying the PIN
+                    }
+                })
+                .withFailureHandler(error => {
+                    handlePinError("เกิดข้อผิดพลาด: " + error.message);
+                    toggleFormControls(false); // Keep form locked
+                })
+                .getShopByPin(pin); // เรียกฟังก์ชันที่แก้ไขแล้ว
+        });
+
+        // New function to fetch and populate brands based on shop name
+        function fetchAndPopulateBrands(shopNameToFetch) {
+            google.script.run
+                .withSuccessHandler(fetchedBrands => {
+                    brandsList = fetchedBrands || [];
+                    generateFertilizerFields(); // Regenerate fields with new brand list
+                })
+                .withFailureHandler(error => {
+                    console.error("Error fetching brands:", error);
+                    alert("เกิดข้อผิดพลาดในการโหลดข้อมูลยี่ห้อปุ๋ย: " + error.message);
+                })
+                .getBrands(shopNameToFetch);
+        }
+
+        function handlePinError(message) {
+            pinInputEl.value = ''; // รีเซ็ตอินพุต PIN
+            pinInputEl.classList.add('is-invalid');
+            pinInvalidFeedbackEl.textContent = message || "เกิดข้อผิดพลาดในการตรวจสอบ PIN กรุณาลองใหม่";
+            verifyPinBtn.disabled = false; // เปิดใช้งานปุ่มอีกครั้ง
+            isPinVerifiedGlobally = false;
+            toggleFormControls(false); // Ensure form remains locked
+            pinInputEl.focus(); // โฟกัสที่อินพุต PIN
+            if (message.includes("No item with the given ID")) {
+                message = "ไม่พบ PIN นี้ในระบบ กรุณาตรวจสอบใหม่";
+                pinInputEl.addEventListener('input', () => {
+                    if (pinInputEl.value.length === 4) {
+                        verifyPinBtn.click();
+                    }
+                });
+            }
+            isPinVerifiedGlobally = false;
+            calculateTotals();
+            toggleFormControls(false); // Lock form on reset
+        };
+
+        pinInputEl.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                verifyPinBtn.click();
+            }
+        });
+
+
+        // --- FERTILIZER DATA AND DYNAMIC ROWS LOGIC ---
+        let brandsList = []; // To store fetched brands
+
+        // ลบการเรียกใช้ fetchInitialData ออกไป
+        // fetchInitialData(); // ลบออก
+
+        function fetchInitialData() { // Renamed for clarity
+            showLoading();
+            google.script.run
+                .withSuccessHandler(fetchedBrands => {
+                    brandsList = fetchedBrands || [];
+                    // If numFertilizers has a value, regenerate fields with new brand list.
+                    // This is usually not needed on initial load unless numFertilizers is pre-filled.
+                    // if (document.getElementById("numFertilizers").value) {
+                    //     generateFertilizerFields();
+                    // }
+                    hideLoading();
+                })
+                .withFailureHandler(error => {
+                    console.error("Error fetching brands:", error);
+                    alert("เกิดข้อผิดพลาดในการโหลดข้อมูลยี่ห้อปุ๋ย: " + error.message);
+                    hideLoading();
+                })
+                .getBrands();
+        }
+
+        const fertilizerRowsContainer = document.getElementById('fertilizerRowsContainer');
+
+        function generateFertilizerFields() {
+            const numFertilizersInput = document.getElementById("numFertilizers");
+            const num = parseInt(numFertilizersInput.value);
+            fertilizerRowsContainer.innerHTML = ""; // Clear previous
+
+            if (isNaN(num) || num < 1 || num > 8) {
+                if (numFertilizersInput.value !== "" && (isNaN(num) || num < 1 || num > 8) ) {
+                     alert("กรุณาระบุจำนวนสูตรปุ๋ยระหว่าง 1 ถึง 8 สูตร");
+                }
+                calculateTotals(); // Recalculate if rows are cleared
+                return;
+            }
+
+            for (let i = 1; i <= num; i++) {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.classList.add('form-section', 'border', 'p-3', 'rounded', 'mb-3');
+                // sectionDiv.style.opacity = 0; // Initial state for animation
+
+                const rowHTML = `
+                    <h6 class="mb-3">รายละเอียดปุ๋ยสูตรที่ ${i}</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="brand${i}" class="form-label">ยี่ห้อปุ๋ย</label>
+                            <select class="form-select brand-select" id="brand${i}" name="ยี่ห้อ${i}" data-index="${i}" required>
+                                <option value="" selected disabled>🔸 เลือกยี่ห้อ 🔸</option>
+                                ${brandsList.map(brand => `<option value="${brand}">${brand}</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="formula${i}" class="form-label">สูตรปุ๋ย</label>
+                            <select class="form-select formula-select" id="formula${i}" name="สูตรปุ๋ย${i}" data-index="${i}" required>
+                                <option value="" selected disabled>🔸 เลือกสูตร (เลือกยี่ห้อก่อน) 🔸</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label for="quantity${i}" class="form-label fertilizer-item-label-small" style="font-size: calc(1rem + 2px);">จำนวน (กส.)</label>
+                            <input type="number" class="form-control quantity-input" id="quantity${i}" name="จำนวน${i}" data-index="${i}" min="1" required placeholder="0">
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <label class="form-label fertilizer-item-label-small">ยอดรวมสูตรนี้</label>
+                            <div class="fw-bold text-success pt-2 item-total-display" id="itemTotalDisplay${i}">0 บาท</div>
+                            <input type="hidden" name="ยอดชำระ${i}" id="itemTotalInput${i}">
+                        </div>
+                    </div>
+                `;
+                sectionDiv.innerHTML = rowHTML;
+                fertilizerRowsContainer.appendChild(sectionDiv);
+                sectionObserver.observe(sectionDiv); // Observe for animation
+            }
+            attachEventListenersToFertilizerRows();
+            calculateTotals();
+        }
+
+        function attachEventListenersToFertilizerRows() {
+            document.querySelectorAll('.brand-select').forEach(select => {
+                select.addEventListener('change', handleBrandChange);
+            });
+            document.querySelectorAll('.formula-select, .quantity-input').forEach(input => {
+                input.addEventListener('change', calculateItemTotalAndGrandTotal); // Use change for select, input for number
+                if (input.type === 'number') {
+                    input.addEventListener('input', calculateItemTotalAndGrandTotal);
+                }
+            });
+        }
+
+        function handleBrandChange(event) {
+            const index = event.target.dataset.index;
+            const selectedBrand = event.target.value;
+            const formulaSelect = document.getElementById(`formula${index}`);
+
+            formulaSelect.innerHTML = `<option value="" selected disabled>กำลังโหลดสูตร...</option>`;
+            formulaSelect.disabled = true;
+
+            // Clear dependent fields
+            const quantityInput = document.getElementById(`quantity${index}`);
+            if (quantityInput) quantityInput.value = '';
+            document.getElementById(`itemTotalDisplay${index}`).textContent = '0 บาท';
+            document.getElementById(`itemTotalInput${index}`).value = '0';
+
+            if (!selectedBrand) {
+                formulaSelect.innerHTML = `<option value="" selected disabled>🔸 เลือกสูตร (เลือกยี่ห้อก่อน) 🔸</option>`;
+                formulaSelect.disabled = false;
+                calculateTotals();
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(fertilizerFormulas => {
+                    formulaSelect.innerHTML = `<option value="" selected disabled>🔸 เลือกสูตรปุ๋ย 🔸</option>`;
+                    if (fertilizerFormulas && fertilizerFormulas.length > 0) {
+                        fertilizerFormulas.forEach(formula => {
+                            const option = document.createElement("option");
+                            option.value = formula.name;
+                            option.dataset.price = formula.price;
+                            option.textContent = `${formula.name} (${parseInt(formula.price).toLocaleString()} บาท/กส.)`;
+                            formulaSelect.appendChild(option);
+                        });
+                    } else {
+                        formulaSelect.innerHTML = `<option value="" selected disabled>ไม่พบสูตรสำหรับยี่ห้อนี้</option>`;
+                    }
+                    formulaSelect.disabled = false;
+                    calculateTotals(); // Recalculate totals after formulas are loaded
+                })
+                .withFailureHandler(error => {
+                    console.error("Error fetching formulas for brand:", selectedBrand, error);
+                    formulaSelect.innerHTML = `<option value="" selected disabled>โหลดสูตรไม่สำเร็จ</option>`;
+                    formulaSelect.disabled = false;
+                    calculateTotals();
+                })
+                .getFertilizerData(selectedBrand);
+        }
+        
+        function calculateItemTotalAndGrandTotal(event) {
+            const index = event.target.dataset.index;
+            calculateItemTotal(index);
+            calculateTotals();
+        }
+
+
+        function calculateItemTotal(index) {
+            const formulaSelect = document.getElementById(`formula${index}`);
+            const quantityInput = document.getElementById(`quantity${index}`);
+            const itemTotalDisplay = document.getElementById(`itemTotalDisplay${index}`);
+            const itemTotalInput = document.getElementById(`itemTotalInput${index}`);
+
+            const selectedOption = formulaSelect ? formulaSelect.options[formulaSelect.selectedIndex] : null;
+            const pricePerBag = selectedOption && selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
+            const quantity = quantityInput ? parseFloat(quantityInput.value) : 0;
+
+            let total = 0;
+            if (!isNaN(pricePerBag) && !isNaN(quantity) && quantity > 0) {
+                total = pricePerBag * quantity;
+            }
+
+            itemTotalDisplay.textContent = `${total.toLocaleString()} บาท`;
+            itemTotalInput.value = total;
+        }
+
+
+        function calculateTotals() {
+            let grandTotal = 0;
+            let totalQuantity = 0;
+            const numFertilizers = parseInt(document.getElementById("numFertilizers").value) || 0;
+
+            for (let i = 1; i <= numFertilizers; i++) {
+                const itemTotalInput = document.getElementById(`itemTotalInput${i}`);
+                const quantityInput = document.getElementById(`quantity${i}`);
+
+                if (itemTotalInput && quantityInput) {
+                    grandTotal += parseFloat(itemTotalInput.value) || 0;
+                    totalQuantity += parseFloat(quantityInput.value) || 0;
+                }
+            }
+
+            document.getElementById("grandTotalDisplay").textContent = `${grandTotal.toLocaleString()} บาท`;
+            document.getElementById("grandTotalInput").value = grandTotal;
+            document.getElementById("totalQuantityDisplay").textContent = `${totalQuantity.toLocaleString()} กระสอบ`;
+            document.getElementById("totalQuantityInput").value = totalQuantity;
+        }
+
+
+        // --- FORM SUBMISSION LOGIC ---
+        const formElement = document.getElementById('fertilizerOrderForm');
+        const summaryModalInstance = new bootstrap.Modal(document.getElementById('summaryModal'));
+        let isSubmitting = false; // เพิ่มตัวแปรสำหรับตรวจสอบสถานะการส่ง
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            if (isSubmitting) return;
+
+            // ตรวจสอบ PIN
+            if (!isPinVerifiedGlobally || !shopNameDisplayEl.value) {
+                alert("กรุณากรอกและยืนยันรหัส PIN ร้านค้าให้ถูกต้องก่อนครับ/ค่ะ");
+                openPinModalBtn.focus();
+                return;
+            }
+
+            // ตรวจสอบจำนวนสูตรปุ๋ย
+            const numFertilizers = parseInt(document.getElementById("numFertilizers").value, 10);
+            if (isNaN(numFertilizers) || numFertilizers < 1) {
+                alert("กรุณาระบุจำนวนสูตรปุ๋ยและกรอกรายละเอียดอย่างน้อย 1 สูตรครับ/ค่ะ");
+                document.getElementById("numFertilizers").focus();
+                return;
+            }
+
+            // Proceed to show summary modal
+            showSummaryModal();
+        }
+
+        function showSummaryModal() {
+            // Populate Summary Modal
+            document.getElementById("modalShopName").textContent = shopNameDisplayEl.value;
+            document.getElementById("modalDeliveryMethod").textContent = document.getElementById('deliveryMethod').value;
+            document.getElementById("modalPaymentMethod").textContent = document.getElementById('paymentMethod').value;
+
+            // เพิ่มการแสดงรายละเอียดการชำระเงินปลายทาง
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const modalPaymentMethod = document.getElementById("modalPaymentMethod");
+            if (paymentMethod === 'จ่ายสดปลายทาง') {
+                const codType = document.querySelector('input[name="codType"]:checked')?.value || 'จ่ายสด';
+                modalPaymentMethod.textContent = `${paymentMethod} (${codType})`;
+            }
+
+            const notesValue = document.getElementById('orderNotes').value.trim();
+            const modalNotesP = document.getElementById('modalOrderNotesP');
+            const modalNotesSpan = document.getElementById('modalOrderNotes');
+
+            if (notesValue) {
+                modalNotesSpan.textContent = notesValue;
+                modalNotesP.style.display = 'block';
+            } else {
+                modalNotesSpan.textContent = '-';
+                modalNotesP.style.display = 'none';
+            }
+
+            // Clear previous details
+            const modalFertilizerDetails = document.getElementById("modalFertilizerDetails");
+    const modalFertilizerDetailsContainer = modalFertilizerDetails; // แก้ไขตรงนี้
+
+    if (modalFertilizerDetailsContainer) {
+        modalFertilizerDetailsContainer.innerHTML = ''; // ล้างข้อมูลเก่า
+    } else {
+        console.error("Element #modalFertilizerDetails หรือ .card-body ไม่พบใน DOM");
+        return;
+    }
+
+            const numFertilizers = parseInt(document.getElementById("numFertilizers").value, 10);
+            let currentModalGrandTotal = 0;
+            let currentModalTotalQuantity = 0;
+
+            for (let i = 1; i <= numFertilizers; i++) {
+                const brand = document.getElementById(`brand${i}`).value;
+                const formulaSelect = document.getElementById(`formula${i}`);
+                const formulaName = formulaSelect.value;
+                const quantity = parseInt(document.getElementById(`quantity${i}`).value);
+                const pricePerBag = parseFloat(formulaSelect.options[formulaSelect.selectedIndex]?.dataset.price || 0);
+                const itemTotal = parseFloat(document.getElementById(`itemTotalInput${i}`).value);
+
+                currentModalGrandTotal += itemTotal;
+                currentModalTotalQuantity += quantity;
+
+                const detailDiv = document.createElement('div');
+                detailDiv.classList.add('mb-2', 'pb-2', 'border-bottom');
+                detailDiv.innerHTML = `
+                    <p class="mb-1"><strong>รายการที่ ${i}:</strong> ${brand} - ${formulaName}</p>
+                    <ul class="list-unstyled ms-3 mb-0">
+                        <li>จำนวน: ${quantity.toLocaleString()} กระสอบ</li>
+                        <li>ราคา/กระสอบ: ${pricePerBag.toLocaleString()} บาท</li>
+                        <li>ยอดรวมสูตรนี้: ${itemTotal.toLocaleString()} บาท</li>
+                    </ul>`;
+                modalFertilizerDetailsContainer.appendChild(detailDiv);
+            }
+
+            document.getElementById("modalTotalQuantity").textContent = currentModalTotalQuantity.toLocaleString();
+            document.getElementById("modalGrandTotal").textContent = currentModalGrandTotal.toLocaleString();
+
+            // Show the modal
+            summaryModalInstance.show();
+        }
+
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+        confirmOrderBtn.addEventListener('click', function() {
+            if (isSubmitting) {
+                return; // ถ้ากำลังส่งอยู่ ให้ไม่ทำอะไร
+            }
+            
+            isSubmitting = true;
+            this.disabled = true;
+            this.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังส่ง...`;
+            showLoading();
+
+            try {
+                const dataObject = {};
+                dataObject['ชื่อร้าน'] = shopNameDisplayEl.value;
+                dataObject['verifiedShopPin'] = verifiedShopPinInputEl.value;
+                dataObject['ช่องทางการรับปุ๋ย'] = document.getElementById('deliveryMethod').value;
+                dataObject['วิธีการชำระเงิน'] = document.getElementById('paymentMethod').value;
+                dataObject['หมายเหตุ'] = document.getElementById('orderNotes').value || '-';
+
+                // เพิ่มข้อมูลการชำระเงินปลายทาง
+                if (dataObject['วิธีการชำระเงิน'] === 'จ่ายสดปลายทาง') {
+                    const codType = document.querySelector('input[name="codType"]:checked')?.value || 'จ่ายสด';
+                    dataObject['codType'] = codType;
+                }
+
+                const numFertilizers = parseInt(document.getElementById("numFertilizers").value, 10);
+                for (let i = 1; i <= numFertilizers; i++) {
+                    if (document.getElementById(`brand${i}`)) {
+                        dataObject[`ยี่ห้อ${i}`] = document.getElementById(`brand${i}`).value;
+                        dataObject[`สูตรปุ๋ย${i}`] = document.getElementById(`formula${i}`).value;
+                        dataObject[`จำนวน${i}`] = document.getElementById(`quantity${i}`).value;
+                    }
+                }
+
+                console.log("ส่งข้อมูล:", dataObject);
+
+                google.script.run
+                    .withSuccessHandler(function(response) {
+                        console.log("สำเร็จ:", response);
+                        alert("✅ บันทึกคำสั่งซื้อสำเร็จ");
+                        summaryModalInstance.hide();
+                        formElement.reset();
+                        fertilizerRowsContainer.innerHTML = "";
+                        shopNameDisplayEl.value = "";
+                        verifiedShopPinInputEl.value = "";
+                        isPinVerifiedGlobally = false;
+                        calculateTotals();
+                        toggleFormControls(false); // Lock form on reset
+                        
+                        // ซ่อนตัวเลือกการชำระเงินปลายทาง
+                        document.getElementById('codSubOptions').style.display = 'none';
+                        document.getElementById('codBankInfo').style.display = 'none';
+                        
+                        // รีเซ็ตสถานะปุ่มหลังจาก 3 วินาที
+                        setTimeout(() => {
+                            isSubmitting = false;
+                            confirmOrderBtn.disabled = false;
+                            confirmOrderBtn.innerHTML = '<i class="bi bi-send-check-fill"></i> ยืนยันและส่งคำสั่งซื้อ';
+                            hideLoading();
+                        }, 3000);
+                    })
+                    .withFailureHandler(function(error) {
+                        console.error("ข้อผิดพลาด:", error);
+                        alert("❌ เกิดข้อผิดพลาด: " + (error.message || "ไม่สามารถบันทึกข้อมูลได้"));
+                        
+                        // รีเซ็ตสถานะปุ่มหลังจาก 3 วินาที
+                        setTimeout(() => {
+                            isSubmitting = false;
+                            confirmOrderBtn.disabled = false;
+                            confirmOrderBtn.innerHTML = '<i class="bi bi-send-check-fill"></i> ยืนยันและส่งคำสั่งซื้อ';
+                            hideLoading();
+                        }, 3000);
+                    })
+                    .processForm(dataObject);
+            } catch (e) {
+                console.error("เกิดข้อผิดพลาดในการเตรียมข้อมูล:", e);
+                alert("❌ เกิดข้อผิดพลาดในการเตรียมข้อมูล: " + e.message);
+                
+                // รีเซ็ตสถานะปุ่มหลังจาก 3 วินาที
+                setTimeout(() => {
+                    isSubmitting = false;
+                    confirmOrderBtn.disabled = false;
+                    confirmOrderBtn.innerHTML = '<i class="bi bi-send-check-fill"></i> ยืนยันและส่งคำสั่งซื้อ';
+                    hideLoading();
+                }, 3000);
+            }
+        });
+
+
+
+        // --- INITIALIZATION ---
+        // fetchInitialData(); // ลบออก
+        calculateTotals(); // Initialize totals to 0
+        toggleFormControls(false); // Initially disable form controls
+        // Prompt for PIN on load if desired, or let user click the button
+        // pinModalInstance.show(); // Uncomment to show PIN modal on page load
+
+        // --- COD Sub Options ---
+        const paymentMethodSelect = document.getElementById('paymentMethod');
+        const codSubOptions = document.getElementById('codSubOptions');
+
+        paymentMethodSelect.addEventListener('change', function() {
+            if (this.value === 'จ่ายสดปลายทาง') {
+                codSubOptions.style.display = 'block';
+            } else {
+                codSubOptions.style.display = 'none';
+            }
+        });
+
+        // --- Show bank info if COD transfer selected ---
+        const codCashRadio = document.getElementById('cod_cash');
+        const codTransferRadio = document.getElementById('cod_transfer');
+        const codBankInfo = document.getElementById('codBankInfo');
+
+        function updateCodBankInfo() {
+            if (codTransferRadio.checked) {
+                codBankInfo.style.display = 'block';
+            } else {
+                codBankInfo.style.display = 'none';
+            }
+        }
+        codCashRadio.addEventListener('change', updateCodBankInfo);
+        codTransferRadio.addEventListener('change', updateCodBankInfo);
+        // เรียกครั้งแรกเพื่อ sync สถานะ
+        updateCodBankInfo();
+
+        // --- History Modal Logic ---
+        const historyModal = new bootstrap.Modal(document.getElementById('historyModal'));
+        const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+        const historyShopName = document.getElementById('historyShopName');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const noHistoryMessage = document.getElementById('noHistoryMessage');
+        const historyContent = document.getElementById('historyContent');
+
+        // Enable history button when PIN is verified
+        function toggleHistoryButton(enable) {
+            viewHistoryBtn.disabled = !enable;
+        }
+
+        // View History Button Click Handler
+        viewHistoryBtn.addEventListener('click', () => {
+            if (!isPinVerifiedGlobally || !shopNameDisplayEl.value) {
+                alert("กรุณากรอกและยืนยันรหัส PIN ร้านค้าก่อนครับ/ค่ะ");
+                return;
+            }
+
+            showLoading();
+            historyShopName.textContent = shopNameDisplayEl.value;
+            const historyContent = document.getElementById('historyContent');
+            const noHistoryMessage = document.getElementById('noHistoryMessage');
+            const dateFilter = document.getElementById('historyDateFilter');
+            
+            historyContent.innerHTML = ''; // Clear previous history
+            noHistoryMessage.style.display = 'none';
+            dateFilter.innerHTML = '<option value="">แสดงทั้งหมด</option>';
+
+            // ดึงข้อมูลวันที่ในประวัติ
+            google.script.run
+                .withSuccessHandler(dates => {
+                    if (dates && dates.length > 0) {
+                        dates.forEach(date => {
+                            const option = document.createElement('option');
+                            option.value = date.value;
+                            option.textContent = date.label;
+                            dateFilter.appendChild(option);
+                        });
+                    }
+                })
+                .withFailureHandler(error => {
+                    console.error("Error fetching dates:", error);
+                })
+                .getOrderHistoryDates(verifiedShopPinInputEl.value);
+
+            // ดึงข้อมูลประวัติการสั่งซื้อ
+            loadOrderHistory();
+
+            historyModal.show();
+        });
+
+        // เพิ่ม Event Listener สำหรับการเปลี่ยนวันที่
+        document.getElementById('historyDateFilter').addEventListener('change', function() {
+            loadOrderHistory();
+        });
+
+        // ฟังก์ชันสำหรับโหลดประวัติการสั่งซื้อ
+        function loadOrderHistory() {
+            showLoading();
+            const historyContent = document.getElementById('historyContent');
+            const noHistoryMessage = document.getElementById('noHistoryMessage');
+            const selectedDate = document.getElementById('historyDateFilter').value;
+            
+            historyContent.innerHTML = ''; // Clear previous history
+            noHistoryMessage.style.display = 'none';
+
+            google.script.run
+                .withSuccessHandler(historyData => {
+                    hideLoading();
+                    if (historyData && historyData.length > 0) {
+                        historyData.forEach(order => {
+                            const orderCard = document.createElement('div');
+                            orderCard.classList.add('card', 'mb-3');
+                            orderCard.innerHTML = order;
+                            historyContent.appendChild(orderCard);
+                        });
+                    } else {
+                        noHistoryMessage.style.display = 'block';
+                    }
+                })
+                .withFailureHandler(error => {
+                    hideLoading();
+                    alert("เกิดข้อผิดพลาดในการดึงประวัติ: " + error.message);
+                })
+                .getOrderHistory(verifiedShopPinInputEl.value, selectedDate);
+        }
+
+        // Reset history button state when form is reset
+        formElement.addEventListener('reset', () => {
+            toggleHistoryButton(false);
+        });
+
+        function fetchDeliveryMethods() {
+            const shopName = shopNameDisplayEl.value; // Get the shop name from the input
+            google.script.run.withSuccessHandler(populateDeliveryMethods).getDeliveryMethods(shopName);
+        }
+
+        function populateDeliveryMethods(deliveryMethods) {
+            const deliveryMethodSelect = document.getElementById('deliveryMethod');
+            deliveryMethodSelect.innerHTML = '<option value="" selected disabled>🔸 เลือกช่องทางรับปุ๋ย 🔸</option>'; // Clear previous options
+
+            deliveryMethods.forEach(method => {
+                const option = document.createElement('option');
+                option.value = method;
+                option.textContent = method;
+                deliveryMethodSelect.appendChild(option);
+            });
+        }
+
+        function fetchBrands(shopName) {
+            const url = `https://script.google.com/macros/s/AKfycbxLamgOGT2JI98WpwIyt2LzC114pps9upUGjgzUsyfHq0CY1FI7d-JkDqlzq9P6Vwyh/execshopName=${encodeURIComponent(shopName)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // ทำงานกับข้อมูลที่ได้รับ
+                    // แสดงข้อมูลใน HTML ตามต้องการ
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อโหลดหน้า
+        window.onload = function() {
+            fetchBrands('ชื่อร้านที่ต้องการ');
+        };
+    </script>
+</body>
+</html>
+
